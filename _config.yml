@@ -1,21 +1,25 @@
 safe: true
 markdown: kramdown
-highlighter: pygments
+exclude: [ assets ]
 permalink: /:title.html
-relative_permalinks: false
 
-default_theme: ribbon
+default_theme: yandex
 default_width: 792
-default_lang: en
+default_lang: ru
 default_body_class: list
 
-author:
-    name: Yours Truly
-    # url:  http://example.com/
-    company:
-        name: Famous Inc.
-        # url:  http://example.com/
+kramdown:
+  enable_coderay: false
 
-fork_url: https://github.com/shower/shower
+presentation:
+    title: "JS: Going&nbsp;deeper"
+    nda: false
+
+author:
+    name: Станислав Говоров
+    position: Системный инженер
+    company:
+        name: Яндекс
+        url:  http://yandex.ru/
+
 progress: true
-line_numbers: true
