@@ -56,7 +56,10 @@ let obj2 = Object.create(null);
 
 * ... unique
     * ... coerced to strings
-
+    * ... `Symbol`
+        * ... avoids name collision (always unique)
+        * ... `Symbol('val') === Symbol('val') //false !!!`
+        * ... "hidden" property
 
 * ... dynamic
     * ... add any prop
@@ -84,13 +87,29 @@ obj[123]   === obj['123']; //true
 let obj1   = { name : 'Doge' };
 obj.wow    = 'much prop';
 obj['wow'] = 'such value';
+~~~
+{:.next}
 
-//ES6 cool feature:
+## ES6 features:
+
+~~~javascript
+//Calculated property names:
 let calculated = 'doge';
 let obj2 = {[calculated] : 'WOW'};
 
+//ES5:
+var calculated   = 'doge';
+var obj2         = {};
+obj2[calculated] = 'WOW';
+~~~
+
+~~~javascript
+//Shorthand property names
 let name = 'Ilya';
-let obj3 = {name}; //destructing
+let obj3 = {name};
+
+//ES5:
+var obj3 = { name: name };
 ~~~
 {:.next}
 
@@ -384,6 +403,85 @@ let instance = new ChildClass();
 
 
 
+## Prototype Chain and Performance
+
+* ... property found
+    * ... ok
+
+* ... property not found
+    * ... up and up
+    * ... and up
+    * ... ok
+    * ... or `undefined`
+
+* ... nonexistent properties
+    * ... will always traverse the full prototype chain
+
+// Prototype chain traversing can have a negative impact on performance.
+
+
+
+
+
+
+## Own properties and inherited properties
+
+* ... Own properties
+
+... vs
+
+* ... Inherited properties
+
+... ??
+
+... `hasOwnProperty`!
+
+... `Object.prototype.hasOwnProperty()`
+
+
+
+
+
+## Own properties and inherited properties
+
+> To check whether an object has a property defined on itself and not somewhere on its prototype chain, it is necessary to use the hasOwnProperty method which all objects inherit from Object.prototype.
+`hasOwnProperty` is the only thing in JavaScript which deals with properties and does not traverse the prototype chain.
+
+> Note: It is not enough to check whether a property is undefined. The property might very well exist, but its value just happens to be set to undefined.
+{:.next}
+
+
+
+
+
+## Extending native prototypes
+
+
+
+### ... (monkey patching)
+
+### ... is a bad idea
+
+~~~javascript
+Array.prototype.forEach = function(){
+    console.log('PWNED')
+};
+[1,2,3,4,5,6,7].forEach(function(element,index,arr){
+    console.log(element);
+});
+~~~
+{:.next}
+
+~~~javascript
+"PWNED"
+~~~
+{:.next}
+
+... [Prototype.js](https://github.com/sstephenson/prototype)
+
+
+
+
 
 
 
@@ -503,76 +601,6 @@ true
 
 
 
-## Prototype Chain and Performance
-
-* ... property found
-    * ... ok
-
-* ... property not found
-    * ... up and up
-    * ... and up
-    * ... ok
-    * ... or `undefined`
-
-* ... nonexistent properties
-    * ... will always traverse the full prototype chain
-
-// Prototype chain traversing can have a negative impact on performance.
-
-
-## Extending native prototypes
-
-
-
-### ... (monkey patching)
-
-### ... is a bad idea
-
-~~~javascript
-Array.prototype.forEach = function(){
-    console.log('PWNED')
-};
-[1,2,3,4,5,6,7].forEach(function(element,index,arr){
-    console.log(element);
-});
-~~~
-{:.next}
-
-~~~javascript
-"PWNED"
-~~~
-{:.next}
-
-... [Prototype.js](https://github.com/sstephenson/prototype)
-
-
-## Own properties and inherited properties
-
-* ... Own properties
-
-... vs
-
-* ... Inherited properties
-
-... ??
-
-... `hasOwnProperty`!
-
-... `Object.prototype.hasOwnProperty()`
-
-
-
-
-## Own properties and inherited properties
-
-> To check whether an object has a property defined on itself and not somewhere on its prototype chain, it is necessary to use the hasOwnProperty method which all objects inherit from Object.prototype.
-`hasOwnProperty` is the only thing in JavaScript which deals with properties and does not traverse the prototype chain.
-
-> Note: It is not enough to check whether a property is undefined. The property might very well exist, but its value just happens to be set to undefined.
-{:.next}
-
-
-
 
 
 
@@ -585,18 +613,24 @@ let object = new Constructor(arguments...);
 
 ~~~javascript
 //1
-let obj  = Object.create(Constructor.prototype);
+let obj  = {};
 ~~~
 {:.next}
 
 ~~~javascript
 //2
-let constructorResult = Constructor.call(obj,arguments...);
+Object.setPrototypeOf(obj,Object.getPrototypeOf(Constructor));
 ~~~
 {:.next}
 
 ~~~javascript
 //3
+let constructorResult = Constructor.apply(obj,arguments);
+~~~
+{:.next}
+
+~~~javascript
+//4
 return constructorResult instanceof Object ? constructorResult : instance;
 ~~~
 {:.next}
@@ -1363,7 +1397,8 @@ $input.on('input',callback);
 
 
 ~~~javascript
-let requestSubscription;
+//assume we have rxjs-based http service
+//this.requestSubscription;
 
 this.inputField.onValueChange()
     .debounce(400)
