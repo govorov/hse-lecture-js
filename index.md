@@ -43,8 +43,9 @@ layout: default
 
 ~~~javascript
 //create empty object
-let obj1 = {};
-let obj2 = Object.create(null);
+let obj1 = {}; // not really empty
+let obj2 = Object.create(Object.prototype);
+let obj3 = Object.create(null);
 ~~~
 {:.next}
 
@@ -421,6 +422,33 @@ let instance = new ChildClass();
 
 
 
+
+## instanceOf
+
+~~~javascript
+class Coffee {}
+let latte    = new Coffee();
+let isCoffee = latte instanceof Coffee; // true
+~~~
+{:.next}
+
+~~~javascript
+let arr = [];
+arr instanceof Array;  // true
+arr instanceof Object; // true
+~~~
+{:.next}
+
+
+
+
+## instanceOf
+
+obj instanceof Constructor
+
+* ... `obj.__proto__ === Constructor.prototype`
+* ... `obj = obj.__proto__`
+* ... repeat :)
 
 
 
@@ -1149,9 +1177,7 @@ askService(param)
     * ... done
     * ... fail
     * ... always
-    * ... pipe
-    * ... progress
-    * ... . . .
+    * ... ...
 
 ... jQuery `ajax()`
 
@@ -1296,10 +1322,10 @@ asyncMonkey.then(
     * ... PROFIT
 
 
-
 * ... `all`
 * ... `race`
 
+## &nbsp;
 
 ...[Q](https://github.com/kriskowal/q)
 
